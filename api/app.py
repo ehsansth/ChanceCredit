@@ -3,6 +3,12 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from faker import Faker
 
+
+
+app = Flask(__name__)
+fake = Faker()
+
+# Route to Calculate Score
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 fake = Faker()
@@ -62,21 +68,34 @@ def calc_score():
     outgoing_cash = fake.random_int(min=100, max=4000)
     on_time_payments = fake.random_int(min=0, max=24)
 
-    # Weighted score calculation
+    # Score Calculation with Weighted Percentages
+
+
     weights = {
         "employment_months": 0.4,  # 40%
         "income_vs_expenses": 0.3,  # 30%
         "on_time_payments": 0.3   # 30%
     }
+
+    # Normalize values to scale them appropriately
+    employment_score = (employment_months / 120) * 100  # Normalize to a percentage
+    income_vs_expenses_score = max(0, ((incoming_cash - outgoing_cash) / 5000) * 100)  # Normalize to a percentage
+    on_time_payments_score = (on_time_payments / 24) * 100  # Normalize to a percentage
+
+    # Weighted score calculation
+    weighted_score = (
     employment_score = (employment_months / 120) * 100  # Normalize to percentage
     income_vs_expenses_score = max(0, ((incoming_cash - outgoing_cash) / 5000) * 100)  # Normalize to percentage
     on_time_payments_score = (on_time_payments / 24) * 100  # Normalize to percentage
+    
+    # Scale the weighted score to be within the range of 300-800
+    score = 300 + (weighted_score / 100) * 500
 
-    score = (
-        employment_score * weights["employment_months"]
-        + income_vs_expenses_score * weights["income_vs_expenses"]
-        + on_time_payments_score * weights["on_time_payments"]
-    )
+    # Return the name and score
+    return jsonify({"name": name, "score": round(score, 2)}), 200
+
+if __name__ == '__main__':
+    app.run(debug=True, port=3001)
 
     # Store the new user and score in the database
     try:
