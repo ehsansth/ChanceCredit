@@ -14,9 +14,8 @@ type RepaymentPlan = {
 export default function FinalPage() {
   const searchParams = useSearchParams();
 
-  // Retrieve data from query parameters
-  const name = searchParams.get('name') || 'User';
-  const ssn = searchParams.get('ssn') || 'X-X-XXXX';
+  // Retrieve `id` from query parameters
+  const id = searchParams.get('id');
   const loanAmount = Number(searchParams.get('loanAmount') || 0);
 
   const [creditScore, setCreditScore] = useState<number | null>(null);
@@ -28,41 +27,18 @@ export default function FinalPage() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        // Check if user data already exists
-        const response = await axios.get('http://localhost:5001/get_user', {
-          params: { name, ssn },
-        });
-
-        if (response.status === 200) {
-          // If data exists, use it
-          const { user } = response.data;
-          setCreditScore(user.score);
-          setError(null);
-        } else {
-          // If no data, calculate score
-          await calculateScore();
+        if (!id) {
+          setError('Invalid user ID. Please try again.');
+          return;
         }
-      } catch (err: any) {
-        if (err.response && err.response.status === 404) {
-          // If user not found, calculate score
-          await calculateScore();
-        } else {
-          console.error(err);
-          setError('Failed to fetch user data. Please try again later.');
-        }
-      }
-    };
 
-    const calculateScore = async () => {
-      try {
-        const response = await axios.post('http://localhost:5001/calc_score', {
-          name,
-          ssn,
-          item_price: loanAmount,
-        });
+        // Make a POST request to fetch user data using the `id`
+        const response = await axios.post('http://127.0.0.1:5001/calc_score', { id });
+        console.log('Requesting user data with ID:', id);
 
         const { user, payment_options, interest_rate } = response.data;
 
+        // Update state with fetched user data
         setCreditScore(user.score);
         setInterestRate(interest_rate);
 
@@ -80,13 +56,15 @@ export default function FinalPage() {
         setPlans(newPlans);
         setError(null); // Reset error on success
       } catch (err: any) {
-        console.error(err);
-        setError('Failed to calculate credit score. Please try again later.');
+        console.error('Error fetching user data:', err);
+        setError(
+          err.response?.data?.message || 'Failed to fetch user data. Please try again later.'
+        );
       }
     };
 
     fetchUserData();
-  }, [name, ssn, loanAmount]);
+  }, [id]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -110,7 +88,7 @@ export default function FinalPage() {
         ) : (
           <>
             <h1 className="text-4xl font-bold text-gray-800 mb-4">
-              Congratulations, {name}!
+              Congratulations!
             </h1>
             <p className="text-xl text-gray-600 mb-6">
               Your credit score is <span className="font-bold text-teal-600">{creditScore}</span>.

@@ -3,6 +3,10 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios'; // Import Axios
+import Image from "next/image";
+import Link from "next/link";
+import { Button } from "@nextui-org/react";
+import logo from '../images/fullLogo.png';
 
 export default function QuestionnairePage() {
   const [formData, setFormData] = useState({
@@ -19,6 +23,7 @@ export default function QuestionnairePage() {
     setError(''); // Clear previous errors
     setLoading(true); // Set loading to true during the submission
 
+    // Validate SSN format
     const ssnPattern = /^\d{3}-?\d{2}-?\d{4}$/;
     if (!ssnPattern.test(formData.ssn)) {
       setError('Please enter a valid Social Security Number.');
@@ -50,25 +55,20 @@ export default function QuestionnairePage() {
   };
 
   return (
-    <div className="min-h-screen font-sans">
+    <div className="bg-sky-50 min-h-screen font-sans">
       {/* Navigation Bar */}
-      <nav className="flex items-center justify-between px-12 py-4 bg-white border-b border-lightgrey fixed top-0 right-0 left-0 z-50">
-        <a href="/" className="text-2xl font-bold text-teal-600">
-          ChanceCredit
-        </a>
-        <a
-          href="/login"
-          className="px-4 py-2 text-xl text-teal-600 hover:text-teal-700 font-bold"
-        >
-          LOG IN
-        </a>
+      <nav className="flex items-center justify-between px-12 py-4 bg-white drop-shadow-md fixed top-0 right-0 left-0 z-50">
+        <Link href="/">
+          <Image src={logo} alt="ChanceCredit Logo" width={300} />
+        </Link>
+        <div className="flex items-center gap-8"></div>
       </nav>
 
       {/* Main Content */}
       <main className="pt-24 px-4 max-w-3xl mx-auto">
-        <div className="flex flex-col items-center gap-6">
+        <div className="flex flex-col items-center gap-6 pt-16 pb-40">
           <h1 className="text-3xl font-bold text-gray-800">
-            What's your legal name?
+            Please Enter Your Information
           </h1>
 
           <p className="text-gray-600 flex items-center gap-2">
@@ -88,9 +88,7 @@ export default function QuestionnairePage() {
             </svg>
           </p>
 
-          {error && (
-            <div className="text-red-500 text-center">{error}</div>
-          )}
+          {error && <div className="text-red-500 text-center">{error}</div>}
 
           <form onSubmit={handleSubmit} className="w-full max-w-2xl space-y-6">
             {/* First Name */}
@@ -105,9 +103,11 @@ export default function QuestionnairePage() {
                 type="text"
                 id="firstName"
                 placeholder="Enter your first name"
-                className="w-full p-3 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                className="w-full p-3 mt-1 border border-gray-300 rounded-lg"
                 value={formData.firstName}
-                onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, firstName: e.target.value })
+                }
                 required
               />
             </div>
@@ -125,9 +125,11 @@ export default function QuestionnairePage() {
                   type="text"
                   id="lastName"
                   placeholder="Enter your last name"
-                  className="w-full p-3 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                  className="w-full p-3 mt-1 border border-gray-300 rounded-lg"
                   value={formData.lastName}
-                  onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, lastName: e.target.value })
+                  }
                   required
                 />
               </div>
@@ -143,9 +145,11 @@ export default function QuestionnairePage() {
                   type="text"
                   id="ssn"
                   placeholder="Enter your SSN (123-45-6789)"
-                  className="w-full p-3 mt-1 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+                  className="w-full p-3 mt-1 border border-gray-300 rounded-lg"
                   value={formData.ssn}
-                  onChange={(e) => setFormData({ ...formData, ssn: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, ssn: e.target.value })
+                  }
                   required
                   pattern="\d{3}-?\d{2}-?\d{4}"
                   maxLength={11}
@@ -158,22 +162,20 @@ export default function QuestionnairePage() {
               <button
                 type="button"
                 onClick={handleBack}
-                className="text-teal-600 hover:text-teal-700 font-medium"
+                className="text-sky-700 hover:text-sky-700 font-medium"
               >
                 ← Back
               </button>
 
-              <button
+              <Button
                 type="submit"
                 disabled={loading} // Disable button while loading
-                className={`px-8 py-3 font-semibold rounded-lg transition-colors ${
-                  loading
-                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                    : 'bg-teal-600 text-white hover:bg-teal-700'
+                className={`transition-transform transform hover:-translate-y-1 hover:shadow-[0_3px_5px_-2px_rgba(0,0,0,1)] overflow-hidden bg-sky-700 text-md text-white font-bold px-6 py-3 rounded-lg transition w-fit ${
+                  loading ? 'cursor-not-allowed' : 'active:translate-y-0 active:shadow-none'
                 }`}
               >
                 {loading ? 'Submitting...' : 'Next'}
-              </button>
+              </Button>
             </div>
           </form>
         </div>
