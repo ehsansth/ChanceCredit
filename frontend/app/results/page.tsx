@@ -11,16 +11,17 @@ export default function ResultsPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Retrieve name and SSN from query parameters (if passed)
-  const [name, setName] = useState(searchParams.get('name') || '');
-  const [ssn, setSsn] = useState(searchParams.get('ssn') || '');
+  // Retrieve userId and score from query parameters
+  const userId = searchParams.get('userId');
+  const score = searchParams.get('score');
+  const interestRate = searchParams.get('interestRate'); // Optional for display
 
   const [purchaseData, setPurchaseData] = useState({
     itemUrl: '',
     itemCost: '',
   });
 
-  // Redirect to the final page with loan amount
+  // Redirect to the final page with loan amount and userId
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -33,7 +34,7 @@ export default function ResultsPage() {
     try {
       // Redirect to the final page with query parameters
       router.push(
-        `/final?name=${encodeURIComponent(name)}&ssn=${encodeURIComponent(ssn)}&loanAmount=${encodeURIComponent(
+        `/final?userId=${encodeURIComponent(userId)}&loanAmount=${encodeURIComponent(
           purchaseData.itemCost
         )}`
       );
@@ -63,12 +64,14 @@ export default function ResultsPage() {
             width={300}
           />
         </Link>
-        <div className="flex items-center gap-8">
-        </div>
+        <div className="flex items-center gap-8"></div>
       </nav>
       <main className="pt-40 px-4 max-w-3xl mx-auto">
         <form onSubmit={handleSubmit} className="space-y-6">
           <h1 className="text-3xl font-bold text-gray-800 text-center">Enter Your Desired Purchase</h1>
+          <p className="text-center text-gray-600">
+            Your credit score is <span className="font-bold">{score}</span> and interest rate is <span className="font-bold">{interestRate}</span>.
+          </p>
 
           <div>
             <label htmlFor="itemUrl" className="block text-sm font-medium text-gray-700">
@@ -103,10 +106,11 @@ export default function ResultsPage() {
               />
             </div>
           </div>
-          <div className='flex justify-center'>
+          <div className="flex justify-center">
             <Button
               type="submit"
-              className="transition-transform transform hover:-translate-y-1 hover:shadow-[0_3px_5px_-2px_rgba(0,0,0,1)] overflow-hidden bg-sky-700 text-md text-white font-bold px-6 py-3 rounded-lg transition w-fit active:translate-y-0 active:shadow-none">
+              className="transition-transform transform hover:-translate-y-1 hover:shadow-[0_3px_5px_-2px_rgba(0,0,0,1)] overflow-hidden bg-sky-700 text-md text-white font-bold px-6 py-3 rounded-lg transition w-fit active:translate-y-0 active:shadow-none"
+            >
               Submit
             </Button>
           </div>

@@ -137,6 +137,7 @@ def generate_payment_options(total_amount, first_quarter_payment):
 def calc_score():
     data = request.json
     user_id = data.get('id')
+    item_price = data.get('item_price')
 
     if user_id:
         user = User.query.filter_by(id=user_id).first()
@@ -144,7 +145,7 @@ def calc_score():
             return jsonify({"message": "User not found"}), 404
 
         payment_rate = calculate_payment_rate(user.score)
-        total_amount = data.get('item_price', 0) * (1 + payment_rate / 100)
+        total_amount = item_price * (1 + payment_rate / 100)
         first_quarter_payment = round(total_amount / 4, 2)
 
         return jsonify({
