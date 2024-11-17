@@ -3,38 +3,60 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from "next/image";
-import logo from '../images/fullLogo.png';
 import Link from "next/link";
 import { Button } from "@nextui-org/react";
+import axios from 'axios'; // Import Axios
+import logo from '../images/fullLogo.png';
 
 export default function QuestionnairePage() {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
     ssn: '',
+    itemPrice: 1000, // Default item price
   });
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
-    // Clear previous errors
-    setError('');
+    setError(''); // Clear previous errors
+    setLoading(true); // Set loading to true during the submission
 
     // Validate SSN format
     const ssnPattern = /^\d{3}-?\d{2}-?\d{4}$/;
     if (!ssnPattern.test(formData.ssn)) {
       setError('Please enter a valid Social Security Number.');
+      setLoading(false);
       return;
     }
 
-    console.log('Form submitted:', formData);
-    router.push('/results');
+    try {
+      // Prepare the data to send to the backend
+      const payload = {
+        name: `${formData.firstName} ${formData.lastName}`,
+        ssn: formData.ssn,
+        item_price: formData.itemPrice,
+      };
+
+      // Send POST request to the Flask backend
+      const response = await axios.post('http://127.0.0.1:5001/calc_score', payload);
+      console.log('Response from backend:', response.data);
+
+      // Navigate to results page with data (e.g., user ID or score)
+      const { user, interest_rate, payment_options } = response.data;
+      router.push(`/results?userId=${user.id}&score=${user.score}&interestRate=${interest_rate}`);
+    } catch (err) {
+      console.error('Error submitting form:', err);
+      setError(err.response?.data?.message || 'Failed to submit the form. Please try again.');
+    } finally {
+      setLoading(false); // Reset loading state
+    }
   };
 
   const handleBack = () => {
-    router.back();
+    router.back(); // Navigate to the previous page
   };
 
   return (
@@ -126,6 +148,27 @@ export default function QuestionnairePage() {
               </div>
             </div>
 
+            {/* Item Price */}
+            <div>
+              <label
+                htmlFor="itemPrice"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Item Price
+              </label>
+              <input
+                type="number"
+                id="itemPrice"
+                placeholder="Enter the item price"
+                className="w-full p-3 mt-1 border border-gray-300 rounded-lg"
+                value={formData.itemPrice}
+                onChange={(e) =>
+                  setFormData({ ...formData, itemPrice: Number(e.target.value) })
+                }
+                required
+              />
+            </div>
+
             {/* Buttons */}
             <div className="flex justify-between items-center pt-6">
               <button
@@ -138,9 +181,10 @@ export default function QuestionnairePage() {
 
               <Button
                 type="submit"
-                className="transition-transform transform hover:-translate-y-1 hover:shadow-[0_3px_5px_-2px_rgba(0,0,0,1)] overflow-hidden bg-sky-700 text-md text-white font-bold px-6 py-3 rounded-lg transition w-fit active:translate-y-0 active:shadow-none"
+                disabled={loading}
+                className="transition-transform transform hover:-translate-y-1 hover:shadow-[0_3px_5px_-2px_rgba(0,0,0,1)] overflow-hidden bg-sky-700 text-md text-white font-bold px-6 py-3 rounded-lg transition w-fit"
               >
-                Next
+                {loading ? 'Submitting...' : 'Next'}
               </Button>
             </div>
           </form>

@@ -14,8 +14,8 @@ type RepaymentPlan = {
 export default function FinalPage() {
   const searchParams = useSearchParams();
 
-  // Retrieve `id` from query parameters
-  const id = searchParams.get('id');
+  // Retrieve `id` and `loanAmount` from query parameters
+  const id = searchParams.get('userId');
   const loanAmount = Number(searchParams.get('loanAmount') || 0);
 
   const [creditScore, setCreditScore] = useState<number | null>(null);
@@ -32,8 +32,8 @@ export default function FinalPage() {
           return;
         }
 
-        // Make a POST request to fetch user data using the `id`
-        const response = await axios.post('http://127.0.0.1:5001/calc_score', { id });
+        // Make a POST request to fetch user data using the `id` and `loanAmount`
+        const response = await axios.post('http://127.0.0.1:5001/calc_score', { id, item_price: loanAmount });
         console.log('Requesting user data with ID:', id);
 
         const { user, payment_options, interest_rate } = response.data;
@@ -64,7 +64,7 @@ export default function FinalPage() {
     };
 
     fetchUserData();
-  }, [id]);
+  }, [id, loanAmount]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
