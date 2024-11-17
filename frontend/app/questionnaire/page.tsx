@@ -2,11 +2,10 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import axios from 'axios'; // Import Axios
 import Image from "next/image";
+import logo from '../images/fullLogo.png';
 import Link from "next/link";
 import { Button } from "@nextui-org/react";
-import logo from '../images/fullLogo.png';
 
 export default function QuestionnairePage() {
   const [formData, setFormData] = useState({
@@ -15,43 +14,27 @@ export default function QuestionnairePage() {
     ssn: '',
   });
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false); // Add a loading state
   const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError(''); // Clear previous errors
-    setLoading(true); // Set loading to true during the submission
+
+    // Clear previous errors
+    setError('');
 
     // Validate SSN format
     const ssnPattern = /^\d{3}-?\d{2}-?\d{4}$/;
     if (!ssnPattern.test(formData.ssn)) {
       setError('Please enter a valid Social Security Number.');
-      setLoading(false);
       return;
     }
 
-    try {
-      const response = await axios.post('http://127.0.0.1:5001/calc_score', {
-        name: `${formData.firstName} ${formData.lastName}`,
-        ssn: formData.ssn,
-        item_price: 1000, // Example item price
-      });
-
-      // Navigate to the results page with the score as a query parameter
-      router.push(`/results?score=${response.data.user.score}`);
-    } catch (err) {
-      console.error('Error submitting form:', err);
-      setError(
-        err.response?.data?.message || 'Failed to submit the form. Please try again.'
-      );
-    } finally {
-      setLoading(false); // Reset loading state
-    }
+    console.log('Form submitted:', formData);
+    router.push('/results');
   };
 
   const handleBack = () => {
-    router.back(); // Navigate to the previous page
+    router.back();
   };
 
   return (
@@ -61,7 +44,6 @@ export default function QuestionnairePage() {
         <Link href="/">
           <Image src={logo} alt="ChanceCredit Logo" width={300} />
         </Link>
-        <div className="flex items-center gap-8"></div>
       </nav>
 
       {/* Main Content */}
@@ -73,19 +55,6 @@ export default function QuestionnairePage() {
 
           <p className="text-gray-600 flex items-center gap-2">
             Checking your rate won't affect your credit score.
-            <svg
-              className="w-5 h-5 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
           </p>
 
           {error && <div className="text-red-500 text-center">{error}</div>}
@@ -169,12 +138,9 @@ export default function QuestionnairePage() {
 
               <Button
                 type="submit"
-                disabled={loading} // Disable button while loading
-                className={`transition-transform transform hover:-translate-y-1 hover:shadow-[0_3px_5px_-2px_rgba(0,0,0,1)] overflow-hidden bg-sky-700 text-md text-white font-bold px-6 py-3 rounded-lg transition w-fit ${
-                  loading ? 'cursor-not-allowed' : 'active:translate-y-0 active:shadow-none'
-                }`}
+                className="transition-transform transform hover:-translate-y-1 hover:shadow-[0_3px_5px_-2px_rgba(0,0,0,1)] overflow-hidden bg-sky-700 text-md text-white font-bold px-6 py-3 rounded-lg transition w-fit active:translate-y-0 active:shadow-none"
               >
-                {loading ? 'Submitting...' : 'Next'}
+                Next
               </Button>
             </div>
           </form>
