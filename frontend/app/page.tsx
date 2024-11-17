@@ -78,7 +78,7 @@ export default function Home() {
           </div>
         </div>
         <div className="px-10 mt-8">
-          <h2 className="text-2xl font-bold mb-6">Something something something</h2>
+          <h2 className="text-2xl font-bold mb-6">Your Second Chance at Financial Freedom.</h2>
           <div className="grid md:grid-cols-4 gap-4">
             <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition">
               <div className="w-12 h-12 bg-sky-100 rounded-full flex items-center justify-center mb-4">
@@ -86,26 +86,35 @@ export default function Home() {
                   <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold mb-2">No Minimum Balance Requirements</h3>
-              <p className="text-gray-600">Description</p>
+              <h3 className="text-xl font-bold mb-2">No Safety Deposit Needed</h3>
+              <p className="text-gray-600">Access financial assistance without the burden of upfront deposits.</p>
             </div>
             <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition">
               <div className="w-12 h-12 bg-sky-100 rounded-full flex items-center justify-center mb-4">
+              <svg className="w-6 h-6 text-sky-700" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M15.75 5.6a7 7 0 1 1-7.5 0 9.6 9.6 0 1 0 7.5 0zM12 13a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" />
+                </svg>
               </div>
               <h3 className="text-xl font-bold mb-2">Easy Identity Verification</h3>
-              <p className="text-gray-600">Description</p>
+              <p className="text-gray-600">Secure and hassle-free process to verify your identity.</p>
             </div>
             <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition">
               <div className="w-12 h-12 bg-sky-100 rounded-full flex items-center justify-center mb-4">
+              <svg className="w-6 h-6 text-sky-700" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M11.99 2.01 7 7.28V11h3v2h4v-2h3V7.28L11.99 2.01zM5 17v2h14v-2H5zm3-4v2h8v-2H8z" />
+                </svg>
               </div>
               <h3 className="text-xl font-bold mb-2">Top-Quality Financial Assistance</h3>
-              <p className="text-gray-600">Description</p>
+              <p className="text-gray-600">Expert guidance tailored to your financial needs.</p>
             </div>
             <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition">
               <div className="w-12 h-12 bg-sky-100 rounded-full flex items-center justify-center mb-4">
+              <svg className="w-6 h-6 text-sky-700" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-6h2v6zm6-2h-2v-4h2v4z" />
+                </svg>
               </div>
               <h3 className="text-xl font-bold mb-2">Proven Successful Results</h3>
-              <p className="text-gray-600">Description</p>
+              <p className="text-gray-600">Overwhelming success with our tailored programs.</p>
             </div>
           </div>
         </div>
