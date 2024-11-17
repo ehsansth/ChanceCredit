@@ -1,7 +1,7 @@
 'use client';
 
 import axios from 'axios';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
 // Define a type for the repayment plans
@@ -13,6 +13,7 @@ type RepaymentPlan = {
 
 export default function FinalPage() {
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   // Retrieve `id` and `loanAmount` from query parameters
   const id = searchParams.get('userId');
@@ -68,9 +69,14 @@ export default function FinalPage() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     if (selectedPlan !== null) {
-      alert(`You selected the ${plans[selectedPlan].totalWeeks}-week plan!`);
       console.log('Selected plan:', plans[selectedPlan]);
+
+      // Redirect to the dashboard page with the userId
+      router.push(`/dashboard?userId=${id}`);
+    } else {
+      alert('Please select a repayment plan.');
     }
   };
 

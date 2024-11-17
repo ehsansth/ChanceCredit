@@ -1,12 +1,21 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Image from "next/image";
 import Link from "next/link";
 import logo from '../images/fullLogo.png';
 import { XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar, ReferenceLine, RadialBarChart, RadialBar, PolarAngleAxis } from 'recharts';
 import { Button } from "@nextui-org/react";
+import axios from 'axios';
 
-export default function Home() {
+export default function Dashboard() {
+    const searchParams = useSearchParams();
+    const userId = searchParams.get('userId');
+
+    const [userName, setUserName] = useState(''); // To dynamically set the user name
+    const [creditScore, setCreditScore] = useState<number | null>(null); // To dynamically set the credit score
+    const [error, setError] = useState<string | null>(null);
 
     const barData = [
         { month: 'Jun', amount: 280.45 },
@@ -18,7 +27,6 @@ export default function Home() {
     ];
     const avg = (barData.reduce((sum, entry) => sum + entry.amount, 0) / barData.length).toFixed(2);
 
-    const creditScore = 600;
     const percentage = ((creditScore - 300) / (850 - 300)) * 100;
 
     const data = [
@@ -35,6 +43,31 @@ export default function Home() {
         if (score >= 580) return '#eab308';
         return '#ef4444';
     }
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            if (!userId) {
+                setError('Good morning, User');
+                return;
+            }
+
+            try {
+                // Make an API call to fetch user data
+                const response = await axios.post('http://127.0.0.1:5001/get_user', { id: userId });
+                const { user } = response.data;
+
+                // Update state with user data
+                setUserName(user.name);
+                setCreditScore(user.score);
+                setError(null); // Clear errors if data is successfully fetched
+            } catch (err: any) {
+                console.error('Error fetching user data:', err);
+                setError('Failed to fetch user data. Please try again later.');
+            }
+        };
+
+        fetchUserData();
+    }, [userId]);
 
     return (
         <div className="min-h-screen font-sans bg-sky-50">
@@ -53,7 +86,11 @@ export default function Home() {
                     <div className='flex-1'>                                                    {/* Left Side */}
                         <div className="shadow bg-white rounded-lg py-16">
                             <h1 className="text-center text-5xl font-bold text-gray-800">       {/* GM Anthony */}
-                                Good Morning, Anthony 👋
+                                {error ? (
+                                    <span className="text-red-600">{error}</span>
+                                ) : (
+                                    `Good Morning, ${userName || 'User'} 👋`
+                                )}
                             </h1>
                         </div>
                         <div className="shadow bg-white rounded-lg p-8 mt-8">                   {/* Payments Box */}
@@ -222,7 +259,7 @@ export default function Home() {
                                         />
                                     </RadialBarChart>
                                     <div className="absolute top-16 flex flex-col items-center">
-                                        <p className="text-4xl font-bold text-gray-800">{creditScore}</p>
+                                    <p className="text-4xl font-bold text-gray-800">{creditScore || '---'}</p>
                                         <p className="text-sm text-gray-600">Credit Score</p>
                                     </div>
                                     <div className="flex justify-center gap-6">
