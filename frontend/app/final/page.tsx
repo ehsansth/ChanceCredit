@@ -6,7 +6,6 @@ import { useState, useEffect } from 'react';
 import logo from '../images/fullLogo.png';
 import Link from "next/link";
 import Image from "next/image";
-import { Button } from "@nextui-org/react";
 
 // Define a type for the repayment plans
 type RepaymentPlan = {
@@ -17,6 +16,7 @@ type RepaymentPlan = {
 
 export default function FinalPage() {
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   // Retrieve `id` and `loanAmount` from query parameters
   const id = searchParams.get('userId');
@@ -27,8 +27,6 @@ export default function FinalPage() {
   const [plans, setPlans] = useState<RepaymentPlan[]>([]);
   const [selectedPlan, setSelectedPlan] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
-
-  const router = useRouter();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -74,8 +72,14 @@ export default function FinalPage() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     if (selectedPlan !== null) {
-      router.push('/dashboard');
+      console.log('Selected plan:', plans[selectedPlan]);
+
+      // Redirect to the dashboard page with the userId
+      router.push(`/dashboard?userId=${id}`);
+    } else {
+      alert('Please select a repayment plan.');
     }
   };
 
@@ -91,7 +95,7 @@ export default function FinalPage() {
         </Link>
         <div className="flex items-center gap-8"></div>
       </nav>
-      <main className="pt-40 pb-20 px-4 max-w-4xl mx-auto">
+      <main className="pt-40 px-4 max-w-4xl mx-auto">
         {creditScore === null && !error ? (
           <div className="text-center">
             <p className="text-xl text-gray-600">Fetching your credit score...</p>
@@ -122,39 +126,39 @@ export default function FinalPage() {
                     <div
                       key={index}
                       className={`relative border-2 rounded-lg p-6 cursor-pointer transition-all ${selectedPlan === index
-                        ? 'border-sky-600 bg-sky-50'
-                        : 'border-gray-200 hover:border-sky-600'
+                          ? 'border-sky-700 bg-sky-50'
+                          : 'border-gray-200 hover:border-sky-700'
                         }`}
                       onClick={() => setSelectedPlan(index)}
                     >
                       <h3 className="text-lg font-bold text-gray-800 mb-2">{plan.totalWeeks} Weeks</h3>
                       <p className="text-2xl font-bold text-sky-700">
                         ${plan.weeklyPayment.toFixed(2)}{' '}
-                        <span className="text-sm font-normal text-gray-600">/week</span>
+                        <span className="text-sm font-normal text-gray-700">/week</span>
                       </p>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-gray-700">
                         First Quarter Payment: ${plan.firstQuarterPayment.toFixed(2)}
                       </p>
                     </div>
                   ))}
                 </div>
 
-                <Button
+                <button
                   type="submit"
                   disabled={selectedPlan === null}
                   className={`w-full mt-6 px-8 py-3 rounded-lg font-semibold transition-colors ${selectedPlan !== null
-                    ? 'bg-sky-600 hover:bg-sky-700 text-white'
-                    : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                      ? 'bg-sky-700 hover:bg-sky-700 text-white'
+                      : 'bg-gray-200 text-gray-500 cursor-not-allowed'
                     }`}
                 >
                   Continue with {selectedPlan !== null ? `${plans[selectedPlan].totalWeeks}-Week` : ''} Plan
-                </Button>
+                </button>
               </div>
             </form>
           </>
         )}
       </main>
-      <footer className='flex items-center justify-center py-4 bg-sky-50 border-t border-gray-400 mx-64'>
+      <footer className='flex items-center justify-center py-4 bg-sky-50 border-t border-gray-400 mx-64 mt-32'>
         <p>
           By Ehsan Ahmed, Anthony Dang, Van Thiang, and Vincent Dang @ HackUTD 2024: Ripple Effect
         </p>
