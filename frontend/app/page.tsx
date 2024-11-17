@@ -1,12 +1,17 @@
 import Image from "next/image";
 import Link from "next/link";
+import logo from './images/fullLogo.png';
 
 export default function Home() {
   return (
     <div className="min-h-screen font-sans">
       <nav className="flex items-center justify-between px-12 py-4 bg-white border-b border-lightgrey fixed top-0 right-0 left-0 z-50">
         <Link href="/">
-          <div className="text-3xl font-semibold">ChanceCredit</div>
+          <Image
+            src={logo}
+            alt="Man using phone"
+            width={350}
+          />
         </Link>
         <div className="flex items-center gap-8">
           <Link href="/login" className="px-4 py-2 text-xl text-teal-600 hover:text-teal-700 font-bold">
