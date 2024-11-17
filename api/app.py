@@ -3,12 +3,6 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from faker import Faker
 
-
-
-app = Flask(__name__)
-fake = Faker()
-
-# Route to Calculate Score
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 fake = Faker()
@@ -25,6 +19,10 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)  # Auto-incrementing ID
     name = db.Column(db.String(80), nullable=False)
     ssn = db.Column(db.String(11), unique=True, nullable=False)  # SSN in 'XXX-XX-XXXX' format
+    employment_months = db.Column(db.Integer, nullable=False)
+    incoming_cash = db.Column(db.Float, nullable=False)
+    outgoing_cash = db.Column(db.Float, nullable=False)
+    on_time_payments = db.Column(db.Integer, nullable=False)
     score = db.Column(db.Float, nullable=False)  # Store the calculated score
 
     def __repr__(self):
@@ -35,6 +33,10 @@ class User(db.Model):
             "id": self.id,
             "name": self.name,
             "ssn": self.ssn,
+            "employment_months": self.employment_months,
+            "incoming_cash": self.incoming_cash,
+            "outgoing_cash": self.outgoing_cash,
+            "on_time_payments": self.on_time_payments,
             "score": self.score,
         }
 
@@ -69,8 +71,6 @@ def calc_score():
     on_time_payments = fake.random_int(min=0, max=24)
 
     # Score Calculation with Weighted Percentages
-
-
     weights = {
         "employment_months": 0.4,  # 40%
         "income_vs_expenses": 0.3,  # 30%
@@ -84,22 +84,25 @@ def calc_score():
 
     # Weighted score calculation
     weighted_score = (
-    employment_score = (employment_months / 120) * 100  # Normalize to percentage
-    income_vs_expenses_score = max(0, ((incoming_cash - outgoing_cash) / 5000) * 100)  # Normalize to percentage
-    on_time_payments_score = (on_time_payments / 24) * 100  # Normalize to percentage
-    
+        employment_score * weights["employment_months"]
+        + income_vs_expenses_score * weights["income_vs_expenses"]
+        + on_time_payments_score * weights["on_time_payments"]
+    )
+
     # Scale the weighted score to be within the range of 300-800
     score = 300 + (weighted_score / 100) * 500
 
-    # Return the name and score
-    return jsonify({"name": name, "score": round(score, 2)}), 200
-
-if __name__ == '__main__':
-    app.run(debug=True, port=3001)
-
     # Store the new user and score in the database
     try:
-        user = User(name=name, ssn=ssn, score=round(score, 2))
+        user = User(
+            name=name,
+            ssn=ssn,
+            employment_months=employment_months,
+            incoming_cash=incoming_cash,
+            outgoing_cash=outgoing_cash,
+            on_time_payments=on_time_payments,
+            score=round(score, 2)
+        )
         db.session.add(user)
         db.session.commit()
 
