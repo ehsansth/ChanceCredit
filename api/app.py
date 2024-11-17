@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from faker import Faker
+import os
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
@@ -40,9 +41,13 @@ class User(db.Model):
             "score": self.score,
         }
 
-# Initialize database tables directly
-with app.app_context():
-    db.create_all()
+# Check if the database file exists
+db_exists = os.path.exists('data.db')
+
+# Initialize database tables only if the database file does not exist
+if not db_exists:
+    with app.app_context():
+        db.create_all()
 
 def calculate_payment_rate(score):
     if 300 <= score <= 579:
