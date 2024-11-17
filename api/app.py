@@ -1,10 +1,42 @@
 from flask import Flask, jsonify, request
+from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
 from faker import Faker
 
 app = Flask(__name__)
+CORS(app)  # Enable CORS for all routes
 fake = Faker()
 
-# Route to Calculate Score
+# SQLite Database Configuration
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Initialize SQLAlchemy
+db = SQLAlchemy(app)
+
+# Define the User Model
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)  # Auto-incrementing ID
+    name = db.Column(db.String(80), nullable=False)
+    ssn = db.Column(db.String(11), unique=True, nullable=False)  # SSN in 'XXX-XX-XXXX' format
+    score = db.Column(db.Float, nullable=False)  # Store the calculated score
+
+    def __repr__(self):
+        return f"<User {self.name}>"
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "ssn": self.ssn,
+            "score": self.score,
+        }
+
+# Initialize database tables directly
+with app.app_context():
+    db.create_all()
+
+# Route to Calculate or Fetch Score
 @app.route('/calc_score', methods=['POST'])
 def calc_score():
     data = request.json
@@ -16,33 +48,55 @@ def calc_score():
     if not name or not ssn:
         return jsonify({"message": "Name and SSN are required"}), 400
 
+    # Check if the user already exists in the database
+    existing_user = User.query.filter_by(ssn=ssn, name=name).first()
+    if existing_user:
+        return jsonify({
+            "message": "User already exists",
+            "user": existing_user.to_dict()
+        }), 200
+
     # Generate dummy data
     employment_months = fake.random_int(min=0, max=120)  # Number of months employed in the past 10 years
     incoming_cash = fake.random_int(min=500, max=5000)
     outgoing_cash = fake.random_int(min=100, max=4000)
     on_time_payments = fake.random_int(min=0, max=24)
 
-    # Score Calculation with Weighted Percentages
+    # Weighted score calculation
     weights = {
         "employment_months": 0.4,  # 40%
         "income_vs_expenses": 0.3,  # 30%
         "on_time_payments": 0.3   # 30%
     }
+    employment_score = (employment_months / 120) * 100  # Normalize to percentage
+    income_vs_expenses_score = max(0, ((incoming_cash - outgoing_cash) / 5000) * 100)  # Normalize to percentage
+    on_time_payments_score = (on_time_payments / 24) * 100  # Normalize to percentage
 
-    # Normalize values to scale them appropriately
-    employment_score = (employment_months / 120) * 100  # Normalize to a percentage
-    income_vs_expenses_score = max(0, ((incoming_cash - outgoing_cash) / 5000) * 100)  # Normalize to a percentage
-    on_time_payments_score = (on_time_payments / 24) * 100  # Normalize to a percentage
-
-    # Weighted score calculation
     score = (
         employment_score * weights["employment_months"]
         + income_vs_expenses_score * weights["income_vs_expenses"]
         + on_time_payments_score * weights["on_time_payments"]
     )
 
-    # Return the name and score
-    return jsonify({"name": name, "score": round(score, 2)}), 200
+    # Store the new user and score in the database
+    try:
+        user = User(name=name, ssn=ssn, score=round(score, 2))
+        db.session.add(user)
+        db.session.commit()
+
+        return jsonify({
+            "message": "Score calculated and stored successfully",
+            "user": user.to_dict()
+        }), 201
+
+    except Exception as e:
+        return jsonify({"message": f"Error: {str(e)}"}), 400
+
+# Route to Retrieve All Users
+@app.route('/users', methods=['GET'])
+def get_users():
+    users = User.query.all()
+    return jsonify([user.to_dict() for user in users])
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5001)  # Run on port 5001
