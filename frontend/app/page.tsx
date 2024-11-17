@@ -1,16 +1,25 @@
+'use client';
+
+import { useRouter } from 'next/navigation';
 import Image from "next/image";
 import Link from "next/link";
 import logo from './images/fullLogo.png';
-import {Button} from "@nextui-org/react";
+import { Button } from "@nextui-org/react";
 
 export default function Home() {
+  const router = useRouter();
+
+  const handleCheckRateClick = () => {
+    router.push('/questionnaire'); // Navigate to the questionnaire page
+  };
+
   return (
     <div className="min-h-screen font-sans">
       <nav className="flex items-center justify-between px-12 py-4 bg-white border-b border-lightgrey fixed top-0 right-0 left-0 z-50">
         <Link href="/">
           <Image
             src={logo}
-            alt="Man using phone"
+            alt="ChanceCredit Logo"
             width={300}
           />
         </Link>
@@ -44,53 +53,12 @@ export default function Home() {
               </div>
             </div>
 
-            <Button className="transition-transform transform hover:-translate-y-1 hover:shadow overflow-hidden bg-sky-500 text-3xl text-white font-bold px-8 py-4 rounded-full transition w-fit">
+            <Button
+              onClick={handleCheckRateClick}
+              className="transition-transform transform hover:-translate-y-1 hover:shadow overflow-hidden bg-sky-500 text-3xl text-white font-bold px-8 py-4 rounded-full transition w-fit"
+            >
               Check your rate
             </Button>
-
-            {/* 
-            <p className="text-sm text-gray-600">
-              <span className="inline-block mr-2">🔒</span>
-              Won't affect your credit score<sup>1</sup>
-            </p> 
-            */}
-
-            <div className="mt-8">
-              <h2 className="text-2xl font-bold mb-6">What would you like to do?</h2>
-              <div className="grid md:grid-cols-2 gap-4">
-                <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition">
-                  <div className="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center mb-4">
-                    <svg className="w-6 h-6 text-teal-600" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
-                    </svg>
-                  </div>
-                  <h3 className="text-xl font-bold mb-2">Personal loans</h3>
-                  <p className="text-gray-600">Consolidate debt and more</p>
-                </div>
-
-                <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition">
-                  <div className="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center mb-4">
-                    <svg className="w-6 h-6 text-teal-600" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.85 7h10.29l1.08 3.11H5.77L6.85 7zM19 17H5v-5h14v5z" />
-                    </svg>
-                  </div>
-                  <h3 className="text-xl font-bold mb-2">Car loan refinance</h3>
-                  <p className="text-gray-600">Swap your car loan and save</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Column - Image */}
-          <div className="relative">
-            <Image
-              src="/hero-image.jpg"
-              alt="Man using phone"
-              width={600}
-              height={800}
-              className="object-cover rounded-lg"
-              priority
-            />
           </div>
         </div>
       </main>
