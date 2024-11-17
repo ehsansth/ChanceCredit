@@ -55,7 +55,7 @@ export default function Home() {
                 <svg className="w-6 h-6 text-sky-700" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
                 </svg>
-                <span>Calculate your rate and make a plan today.</span>
+                <span>Calculate your rate, make a plan, and receive your loan today!</span>
               </div>
             </div>
 
@@ -91,7 +91,7 @@ export default function Home() {
             </div>
             <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition">
               <div className="w-12 h-12 bg-sky-100 rounded-full flex items-center justify-center mb-4">
-              <svg className="w-6 h-6 text-sky-700" viewBox="0 0 24 24" fill="currentColor">
+                <svg className="w-6 h-6 text-sky-700" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M15.75 5.6a7 7 0 1 1-7.5 0 9.6 9.6 0 1 0 7.5 0zM12 13a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" />
                 </svg>
               </div>
@@ -100,7 +100,7 @@ export default function Home() {
             </div>
             <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition">
               <div className="w-12 h-12 bg-sky-100 rounded-full flex items-center justify-center mb-4">
-              <svg className="w-6 h-6 text-sky-700" viewBox="0 0 24 24" fill="currentColor">
+                <svg className="w-6 h-6 text-sky-700" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M11.99 2.01 7 7.28V11h3v2h4v-2h3V7.28L11.99 2.01zM5 17v2h14v-2H5zm3-4v2h8v-2H8z" />
                 </svg>
               </div>
@@ -109,8 +109,8 @@ export default function Home() {
             </div>
             <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition">
               <div className="w-12 h-12 bg-sky-100 rounded-full flex items-center justify-center mb-4">
-              <svg className="w-6 h-6 text-sky-700" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-6h2v6zm6-2h-2v-4h2v4z" />
+                <svg className="w-6 h-6 text-sky-700" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M9 17L5 13L6.5 11.5L9 14L18.5 4.5L20 6L9 17Z" />
                 </svg>
               </div>
               <h3 className="text-xl font-bold mb-2">Proven Successful Results</h3>
