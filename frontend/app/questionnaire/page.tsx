@@ -159,7 +159,7 @@ export default function QuestionnairePage() {
               <input
                 type="number"
                 id="itemPrice"
-                placeholder="Enter the item price"
+                placeholder="Enter desired loan amount"
                 className="w-full p-3 mt-1 border border-gray-300 rounded-lg"
                 value={formData.itemPrice}
                 onChange={(e) =>
