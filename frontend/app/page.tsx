@@ -70,8 +70,8 @@ export default function Home() {
             <Image
               src={help}
               alt="alt"
-              width={300}
-              height={300}
+              width={450}
+              height={450}
               className="object-cover rounded-lg"
               priority
             />
