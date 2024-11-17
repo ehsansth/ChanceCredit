@@ -49,6 +49,7 @@ if not db_exists:
     with app.app_context():
         db.create_all()
 
+
 def calculate_payment_rate(score):
     if 300 <= score <= 579:
         return round(25 + (36 - 25) * ((score - 300) / 279), 2)  # Linear interpolation
