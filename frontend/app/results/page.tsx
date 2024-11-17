@@ -69,9 +69,6 @@ export default function ResultsPage() {
       <main className="pt-40 px-4 max-w-3xl mx-auto">
         <form onSubmit={handleSubmit} className="space-y-6">
           <h1 className="text-3xl font-bold text-gray-800 text-center">Enter Your Desired Purchase</h1>
-          <p className="text-center text-gray-600">
-            Your credit score is <span className="font-bold">{score}</span> and interest rate is <span className="font-bold">{interestRate}</span>.
-          </p>
 
           <div>
             <label htmlFor="itemUrl" className="block text-sm font-medium text-gray-700">
