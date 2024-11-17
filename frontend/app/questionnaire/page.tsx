@@ -154,12 +154,12 @@ export default function QuestionnairePage() {
                 htmlFor="itemPrice"
                 className="block text-sm font-medium text-gray-700"
               >
-                Item Price
+                Desired Loan Amount
               </label>
               <input
                 type="number"
                 id="itemPrice"
-                placeholder="Enter the item price"
+                placeholder="Enter desired loan amount"
                 className="w-full p-3 mt-1 border border-gray-300 rounded-lg"
                 value={formData.itemPrice}
                 onChange={(e) =>

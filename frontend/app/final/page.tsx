@@ -1,8 +1,12 @@
 'use client';
 
 import axios from 'axios';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
+import logo from '../images/fullLogo.png';
+import Link from "next/link";
+import Image from "next/image";
+import { Button } from "@nextui-org/react";
 
 // Define a type for the repayment plans
 type RepaymentPlan = {
@@ -23,6 +27,8 @@ export default function FinalPage() {
   const [plans, setPlans] = useState<RepaymentPlan[]>([]);
   const [selectedPlan, setSelectedPlan] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  const router = useRouter();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -69,14 +75,23 @@ export default function FinalPage() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (selectedPlan !== null) {
-      alert(`You selected the ${plans[selectedPlan].totalWeeks}-week plan!`);
-      console.log('Selected plan:', plans[selectedPlan]);
+      router.push('/dashboard');
     }
   };
 
   return (
-    <div className="min-h-screen font-sans bg-gray-50">
-      <main className="pt-24 px-4 max-w-4xl mx-auto">
+    <div className="min-h-screen font-sans bg-sky-50">
+      <nav className="flex items-center justify-between px-12 py-4 bg-white drop-shadow-md fixed top-0 right-0 left-0 z-50">
+        <Link href="/">
+          <Image
+            src={logo}
+            alt="ChanceCredit Logo"
+            width={300}
+          />
+        </Link>
+        <div className="flex items-center gap-8"></div>
+      </nav>
+      <main className="pt-40 pb-20 px-4 max-w-4xl mx-auto">
         {creditScore === null && !error ? (
           <div className="text-center">
             <p className="text-xl text-gray-600">Fetching your credit score...</p>
@@ -91,7 +106,7 @@ export default function FinalPage() {
               Congratulations!
             </h1>
             <p className="text-xl text-gray-600 mb-6">
-              Your credit score is <span className="font-bold text-teal-600">{creditScore}</span>.
+              Your credit score is <span className="font-bold text-sky-700">{creditScore}</span>.
             </p>
             <p className="text-lg text-gray-600 mb-6">
               You've been approved for a loan of ${loanAmount.toFixed(2)}!
@@ -106,15 +121,14 @@ export default function FinalPage() {
                   {plans.map((plan, index) => (
                     <div
                       key={index}
-                      className={`relative border-2 rounded-lg p-6 cursor-pointer transition-all ${
-                        selectedPlan === index
-                          ? 'border-teal-600 bg-teal-50'
-                          : 'border-gray-200 hover:border-teal-400'
-                      }`}
+                      className={`relative border-2 rounded-lg p-6 cursor-pointer transition-all ${selectedPlan === index
+                        ? 'border-sky-600 bg-sky-50'
+                        : 'border-gray-200 hover:border-sky-600'
+                        }`}
                       onClick={() => setSelectedPlan(index)}
                     >
                       <h3 className="text-lg font-bold text-gray-800 mb-2">{plan.totalWeeks} Weeks</h3>
-                      <p className="text-2xl font-bold text-teal-600">
+                      <p className="text-2xl font-bold text-sky-700">
                         ${plan.weeklyPayment.toFixed(2)}{' '}
                         <span className="text-sm font-normal text-gray-600">/week</span>
                       </p>
@@ -125,22 +139,26 @@ export default function FinalPage() {
                   ))}
                 </div>
 
-                <button
+                <Button
                   type="submit"
                   disabled={selectedPlan === null}
-                  className={`w-full mt-6 px-8 py-3 rounded-lg font-semibold transition-colors ${
-                    selectedPlan !== null
-                      ? 'bg-teal-600 hover:bg-teal-700 text-white'
-                      : 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                  }`}
+                  className={`w-full mt-6 px-8 py-3 rounded-lg font-semibold transition-colors ${selectedPlan !== null
+                    ? 'bg-sky-600 hover:bg-sky-700 text-white'
+                    : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                    }`}
                 >
                   Continue with {selectedPlan !== null ? `${plans[selectedPlan].totalWeeks}-Week` : ''} Plan
-                </button>
+                </Button>
               </div>
             </form>
           </>
         )}
       </main>
+      <footer className='flex items-center justify-center py-4 bg-sky-50 border-t border-gray-400 mx-64'>
+        <p>
+          By Ehsan Ahmed, Anthony Dang, Van Thiang, and Vincent Dang @ HackUTD 2024: Ripple Effect
+        </p>
+      </footer>
     </div>
   );
 }
