@@ -154,7 +154,7 @@ export default function QuestionnairePage() {
                 htmlFor="itemPrice"
                 className="block text-sm font-medium text-gray-700"
               >
-                Item Price
+                Desired Loan Amount
               </label>
               <input
                 type="number"
