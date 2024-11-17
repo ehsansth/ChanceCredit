@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import logo from './images/fullLogo.png';
+import {Button} from "@nextui-org/react";
 
 export default function Home() {
   return (
@@ -10,7 +11,7 @@ export default function Home() {
           <Image
             src={logo}
             alt="Man using phone"
-            width={350}
+            width={300}
           />
         </Link>
         <div className="flex items-center gap-8">
@@ -24,28 +25,28 @@ export default function Home() {
         <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12">
           <div className="flex flex-col gap-8">
             <h1 className="text-4xl md:text-5xl font-semibold text-gray-800">
-              This is Your <span className="font-bold">Chance</span>
+              Now is Your <span className="font-bold">Chance</span>
             </h1>
 
             <div className="flex flex-col gap-4">
               <div className="flex items-center gap-2">
-                <svg className="w-6 h-6 text-teal-600" viewBox="0 0 24 24" fill="currentColor">
+                <svg className="w-6 h-6 text-sky-500" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
                 </svg>
                 <span>Something something</span>
               </div>
 
               <div className="flex items-center gap-2">
-                <svg className="w-6 h-6 text-teal-600" viewBox="0 0 24 24" fill="currentColor">
+                <svg className="w-6 h-6 text-sky-500" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
                 </svg>
                 <span>Something something</span>
               </div>
             </div>
 
-            <button className="bg-teal-600 text-3xl text-white font-bold px-8 py-4 rounded-md hover:bg-teal-700 transition w-fit">
+            <Button className="transition-transform transform hover:-translate-y-1 hover:shadow overflow-hidden bg-sky-500 text-3xl text-white font-bold px-8 py-4 rounded-full transition w-fit">
               Check your rate
-            </button>
+            </Button>
 
             {/* 
             <p className="text-sm text-gray-600">
