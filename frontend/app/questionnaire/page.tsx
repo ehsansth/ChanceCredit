@@ -11,20 +11,24 @@ export default function QuestionnairePage() {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
-    ssn: ''
+    ssn: '',
   });
-
+  const [error, setError] = useState('');
   const router = useRouter();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    // Clear previous errors
+    setError('');
+
     // Validate SSN format
     const ssnPattern = /^\d{3}-?\d{2}-?\d{4}$/;
     if (!ssnPattern.test(formData.ssn)) {
-      alert('Please enter a valid Social Security Number.');
+      setError('Please enter a valid Social Security Number.');
       return;
     }
+
     console.log('Form submitted:', formData);
     router.push('/results');
   };
@@ -35,16 +39,11 @@ export default function QuestionnairePage() {
 
   return (
     <div className="bg-sky-50 min-h-screen font-sans">
+      {/* Navigation Bar */}
       <nav className="flex items-center justify-between px-12 py-4 bg-white drop-shadow-md fixed top-0 right-0 left-0 z-50">
         <Link href="/">
-          <Image
-            src={logo}
-            alt="ChanceCredit Logo"
-            width={300}
-          />
+          <Image src={logo} alt="ChanceCredit Logo" width={300} />
         </Link>
-        <div className="flex items-center gap-8">
-        </div>
       </nav>
 
       {/* Main Content */}
@@ -58,10 +57,15 @@ export default function QuestionnairePage() {
             Checking your rate won't affect your credit score.
           </p>
 
+          {error && <div className="text-red-500 text-center">{error}</div>}
+
           <form onSubmit={handleSubmit} className="w-full max-w-2xl space-y-6">
             {/* First Name */}
             <div>
-              <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="firstName"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Legal First Name
               </label>
               <input
@@ -70,7 +74,9 @@ export default function QuestionnairePage() {
                 placeholder="Enter your first name"
                 className="w-full p-3 mt-1 border border-gray-300 rounded-lg"
                 value={formData.firstName}
-                onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, firstName: e.target.value })
+                }
                 required
               />
             </div>
@@ -78,7 +84,10 @@ export default function QuestionnairePage() {
             {/* Last Name and SSN */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="lastName"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Legal Last Name
                 </label>
                 <input
@@ -87,13 +96,18 @@ export default function QuestionnairePage() {
                   placeholder="Enter your last name"
                   className="w-full p-3 mt-1 border border-gray-300 rounded-lg"
                   value={formData.lastName}
-                  onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, lastName: e.target.value })
+                  }
                   required
                 />
               </div>
 
               <div>
-                <label htmlFor="ssn" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="ssn"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Social Security Number
                 </label>
                 <input
@@ -102,7 +116,9 @@ export default function QuestionnairePage() {
                   placeholder="Enter your SSN (123-45-6789)"
                   className="w-full p-3 mt-1 border border-gray-300 rounded-lg"
                   value={formData.ssn}
-                  onChange={(e) => setFormData({ ...formData, ssn: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, ssn: e.target.value })
+                  }
                   required
                   pattern="\d{3}-?\d{2}-?\d{4}"
                   maxLength={11}
@@ -119,9 +135,11 @@ export default function QuestionnairePage() {
               >
                 ← Back
               </button>
+
               <Button
                 type="submit"
-                className="transition-transform transform hover:-translate-y-1 hover:shadow-[0_3px_5px_-2px_rgba(0,0,0,1)] overflow-hidden bg-sky-700 text-md text-white font-bold px-6 py-3 rounded-lg transition w-fit active:translate-y-0 active:shadow-none">
+                className="transition-transform transform hover:-translate-y-1 hover:shadow-[0_3px_5px_-2px_rgba(0,0,0,1)] overflow-hidden bg-sky-700 text-md text-white font-bold px-6 py-3 rounded-lg transition w-fit active:translate-y-0 active:shadow-none"
+              >
                 Next
               </Button>
             </div>
