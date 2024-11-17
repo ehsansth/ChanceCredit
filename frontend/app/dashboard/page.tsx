@@ -47,7 +47,7 @@ export default function Dashboard() {
     useEffect(() => {
         const fetchUserData = async () => {
             if (!userId) {
-                setError('Good morning, User');
+                setError('Good morning, User 👋');
                 return;
             }
 
@@ -87,7 +87,7 @@ export default function Dashboard() {
                         <div className="shadow bg-white rounded-lg py-16">
                             <h1 className="text-center text-5xl font-bold text-gray-800">       {/* GM Anthony */}
                                 {error ? (
-                                    <span className="text-red-600">{error}</span>
+                                    <span>{error}</span>
                                 ) : (
                                     `Good Morning, ${userName || 'User'} 👋`
                                 )}
