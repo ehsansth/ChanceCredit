@@ -1,7 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import logo from '../images/fullLogo.png';
+import Link from "next/link";
+import Image from "next/image";
+import { Button } from "@nextui-org/react";
 
 export default function ResultsPage() {
   const router = useRouter();
@@ -50,10 +54,21 @@ export default function ResultsPage() {
   };
 
   return (
-    <div className="min-h-screen font-sans">
-      <main className="pt-24 px-4 max-w-3xl mx-auto">
+    <div className="bg-sky-50 min-h-screen font-sans">
+      <nav className="flex items-center justify-between px-12 py-4 bg-white drop-shadow-md fixed top-0 right-0 left-0 z-50">
+        <Link href="/">
+          <Image
+            src={logo}
+            alt="ChanceCredit Logo"
+            width={300}
+          />
+        </Link>
+        <div className="flex items-center gap-8">
+        </div>
+      </nav>
+      <main className="pt-40 px-4 max-w-3xl mx-auto">
         <form onSubmit={handleSubmit} className="space-y-6">
-          <h1 className="text-3xl font-bold text-gray-800 text-center">Tell us about your purchase</h1>
+          <h1 className="text-3xl font-bold text-gray-800 text-center">Enter Your Desired Purchase</h1>
 
           <div>
             <label htmlFor="itemUrl" className="block text-sm font-medium text-gray-700">
@@ -88,13 +103,13 @@ export default function ResultsPage() {
               />
             </div>
           </div>
-
-          <button
-            type="submit"
-            className="px-8 py-3 bg-teal-600 text-white font-semibold rounded-lg hover:bg-teal-700"
-          >
-            Submit
-          </button>
+          <div className='flex justify-center'>
+            <Button
+              type="submit"
+              className="transition-transform transform hover:-translate-y-1 hover:shadow-[0_3px_5px_-2px_rgba(0,0,0,1)] overflow-hidden bg-sky-700 text-md text-white font-bold px-6 py-3 rounded-lg transition w-fit active:translate-y-0 active:shadow-none">
+              Submit
+            </Button>
+          </div>
         </form>
       </main>
     </div>
