@@ -1,43 +1,41 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function ResultsPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Retrieve name and SSN from query parameters (if passed)
+  const [name, setName] = useState(searchParams.get('name') || '');
+  const [ssn, setSsn] = useState(searchParams.get('ssn') || '');
+
   const [purchaseData, setPurchaseData] = useState({
     itemUrl: '',
     itemCost: '',
   });
-  const [name, setName] = useState('John Doe'); // Mock name
-  const [ssn, setSsn] = useState('123-45-6789'); // Mock SSN
 
+  // Redirect to the final page with loan amount
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    // Validate item cost
+    if (!purchaseData.itemCost || isNaN(Number(purchaseData.itemCost))) {
+      alert('Please enter a valid item cost.');
+      return;
+    }
+
     try {
-      // Fetch the user's credit score
-      const scoreResponse = await fetch('http://localhost:5001/calc_score', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name, ssn }),
-      });
-
-      if (!scoreResponse.ok) {
-        throw new Error('Failed to fetch credit score.');
-      }
-
-      const { user } = await scoreResponse.json();
-
       // Redirect to the final page with query parameters
       router.push(
-        `/final?name=${encodeURIComponent(name)}&creditScore=${user.score}&loanAmount=${purchaseData.itemCost}`
+        `/final?name=${encodeURIComponent(name)}&ssn=${encodeURIComponent(ssn)}&loanAmount=${encodeURIComponent(
+          purchaseData.itemCost
+        )}`
       );
     } catch (error) {
+      console.error('Failed to process your request:', error);
       alert('Failed to process your request. Please try again.');
-      console.error(error);
     }
   };
 
@@ -47,7 +45,7 @@ export default function ResultsPage() {
   };
 
   const handleCostInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/[^0-9.]/g, '');
+    const value = e.target.value.replace(/[^0-9.]/g, ''); // Allow only numbers and a single decimal
     setPurchaseData((prev) => ({ ...prev, itemCost: value }));
   };
 
@@ -58,7 +56,9 @@ export default function ResultsPage() {
           <h1 className="text-3xl font-bold text-gray-800 text-center">Tell us about your purchase</h1>
 
           <div>
-            <label htmlFor="itemUrl" className="block text-sm font-medium text-gray-700">Item URL</label>
+            <label htmlFor="itemUrl" className="block text-sm font-medium text-gray-700">
+              Item URL
+            </label>
             <input
               id="itemUrl"
               type="url"
@@ -70,7 +70,9 @@ export default function ResultsPage() {
           </div>
 
           <div>
-            <label htmlFor="itemCost" className="block text-sm font-medium text-gray-700">Item Cost</label>
+            <label htmlFor="itemCost" className="block text-sm font-medium text-gray-700">
+              Item Cost
+            </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <span className="text-gray-500">$</span>
@@ -98,4 +100,3 @@ export default function ResultsPage() {
     </div>
   );
 }
-
