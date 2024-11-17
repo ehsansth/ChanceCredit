@@ -1,3 +1,4 @@
+import os
 from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
@@ -40,9 +41,14 @@ class User(db.Model):
             "score": self.score,
         }
 
-# Initialize database tables directly
-with app.app_context():
-    db.create_all()
+# Check if the database file exists and create tables if it doesn't
+@app.before_request
+def create_tables():
+    # Check if the database file exists
+    if not os.path.exists("data.db"):
+        # Create tables if the database does not exist
+        with app.app_context():
+            db.create_all()
 
 def calculate_payment_rate(score):
     if 300 <= score <= 579:
@@ -70,8 +76,10 @@ def calc_score():
         return jsonify({"message": "Name, SSN, and item price are required"}), 400
 
     # Check if the user already exists in the database
-    existing_user = User.query.filter_by(ssn=ssn, name=name).first()
+    existing_user = User.query.filter_by(ssn=ssn).first()
     if existing_user:
+        if existing_user.name != name:
+            return jsonify({"message": "SSN already exists with a different name"}), 400
         score = existing_user.score
     else:
         # Generate dummy data
@@ -157,4 +165,25 @@ def get_users():
     return jsonify([user.to_dict() for user in users])
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5001)  # Run on port 5001
+    app.run(debug=True, port=5001)
+
+# Route to Retrieve User by Name and SSN
+@app.route('/get_user', methods=['GET'])
+def get_user():
+    # Get query parameters from the request
+    name = request.args.get('name')
+    ssn = request.args.get('ssn')
+
+    if not name or not ssn:
+        return jsonify({"message": "Name and SSN are required"}), 400
+
+    # Retrieve user from the database
+    user = User.query.filter_by(name=name, ssn=ssn).first()
+
+    if user:
+        return jsonify({
+            "message": "User found",
+            "user": user.to_dict()
+        }), 200
+    else:
+        return jsonify({"message": "User not found"}), 404

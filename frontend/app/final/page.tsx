@@ -1,5 +1,6 @@
 'use client';
 
+import axios from 'axios';
 import { useSearchParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 
@@ -15,60 +16,76 @@ export default function FinalPage() {
 
   // Retrieve data from query parameters
   const name = searchParams.get('name') || 'User';
-  const ssn = searchParams.get('ssn') || 'Unknown';
+  const ssn = searchParams.get('ssn') || 'X-X-XXXX';
   const loanAmount = Number(searchParams.get('loanAmount') || 0);
 
   const [creditScore, setCreditScore] = useState<number | null>(null);
   const [interestRate, setInterestRate] = useState<string>('');
   const [plans, setPlans] = useState<RepaymentPlan[]>([]);
   const [selectedPlan, setSelectedPlan] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Fetch the credit score and repayment plans from the backend
-    const fetchCreditScore = async () => {
+    const fetchUserData = async () => {
       try {
-        const response = await fetch('http://localhost:5001/calc_score', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ name, ssn, item_price: loanAmount }),
+        // Check if user data already exists
+        const response = await axios.get('http://localhost:5001/get_user', {
+          params: { name, ssn },
         });
 
-        if (!response.ok) {
-          throw new Error('Failed to fetch credit score.');
+        if (response.status === 200) {
+          // If data exists, use it
+          const { user } = response.data;
+          setCreditScore(user.score);
+          setError(null);
+        } else {
+          // If no data, calculate score
+          await calculateScore();
         }
-
-        const { user, payment_options, interest_rate } = await response.json();
-        setCreditScore(user.score);
-        setInterestRate(interest_rate);
-
-        // Extract repayment plans from the backend response
-        const newPlans = [
-          {
-            totalWeeks: payment_options['4_week_plan'].total_weeks,
-            weeklyPayment: payment_options['4_week_plan'].weekly_payment,
-            firstQuarterPayment: payment_options['4_week_plan'].first_quarter_payment,
-          },
-          {
-            totalWeeks: payment_options['8_week_plan'].total_weeks,
-            weeklyPayment: payment_options['8_week_plan'].weekly_payment,
-            firstQuarterPayment: payment_options['8_week_plan'].first_quarter_payment,
-          },
-          {
-            totalWeeks: payment_options['12_week_plan'].total_weeks,
-            weeklyPayment: payment_options['12_week_plan'].weekly_payment,
-            firstQuarterPayment: payment_options['12_week_plan'].first_quarter_payment,
-          },
-        ];
-        setPlans(newPlans);
-      } catch (error) {
-        console.error(error);
-        alert('Failed to fetch credit score. Please try again.');
+      } catch (err: any) {
+        if (err.response && err.response.status === 404) {
+          // If user not found, calculate score
+          await calculateScore();
+        } else {
+          console.error(err);
+          setError('Failed to fetch user data. Please try again later.');
+        }
       }
     };
 
-    fetchCreditScore();
+    const calculateScore = async () => {
+      try {
+        const response = await axios.post('http://localhost:5001/calc_score', {
+          name,
+          ssn,
+          item_price: loanAmount,
+        });
+
+        const { user, payment_options, interest_rate } = response.data;
+
+        setCreditScore(user.score);
+        setInterestRate(interest_rate);
+
+        // Extract repayment plans
+        const newPlans: RepaymentPlan[] = [
+          payment_options['4_week_plan'],
+          payment_options['8_week_plan'],
+          payment_options['12_week_plan'],
+        ].map((plan) => ({
+          totalWeeks: plan.total_weeks,
+          weeklyPayment: plan.weekly_payment,
+          firstQuarterPayment: plan.first_quarter_payment,
+        }));
+
+        setPlans(newPlans);
+        setError(null); // Reset error on success
+      } catch (err: any) {
+        console.error(err);
+        setError('Failed to calculate credit score. Please try again later.');
+      }
+    };
+
+    fetchUserData();
   }, [name, ssn, loanAmount]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -82,9 +99,13 @@ export default function FinalPage() {
   return (
     <div className="min-h-screen font-sans bg-gray-50">
       <main className="pt-24 px-4 max-w-4xl mx-auto">
-        {creditScore === null ? (
+        {creditScore === null && !error ? (
           <div className="text-center">
             <p className="text-xl text-gray-600">Fetching your credit score...</p>
+          </div>
+        ) : error ? (
+          <div className="text-center text-red-500">
+            <p className="text-xl">{error}</p>
           </div>
         ) : (
           <>
@@ -116,9 +137,12 @@ export default function FinalPage() {
                     >
                       <h3 className="text-lg font-bold text-gray-800 mb-2">{plan.totalWeeks} Weeks</h3>
                       <p className="text-2xl font-bold text-teal-600">
-                        ${plan.weeklyPayment.toFixed(2)} <span className="text-sm font-normal text-gray-600">/week</span>
+                        ${plan.weeklyPayment.toFixed(2)}{' '}
+                        <span className="text-sm font-normal text-gray-600">/week</span>
                       </p>
-                      <p className="text-sm text-gray-600">First Quarter Payment: ${plan.firstQuarterPayment.toFixed(2)}</p>
+                      <p className="text-sm text-gray-600">
+                        First Quarter Payment: ${plan.firstQuarterPayment.toFixed(2)}
+                      </p>
                     </div>
                   ))}
                 </div>

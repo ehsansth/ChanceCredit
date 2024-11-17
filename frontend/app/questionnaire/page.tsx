@@ -2,35 +2,51 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import axios from 'axios'; // Import Axios
 
 export default function QuestionnairePage() {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
-    ssn: ''
+    ssn: '',
   });
-
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false); // Add a loading state
   const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setError(''); // Clear previous errors
+    setLoading(true); // Set loading to true during the submission
 
-    // Validate SSN format (optional, as pattern attribute already does this)
     const ssnPattern = /^\d{3}-?\d{2}-?\d{4}$/;
     if (!ssnPattern.test(formData.ssn)) {
-      alert('Please enter a valid Social Security Number.');
+      setError('Please enter a valid Social Security Number.');
+      setLoading(false);
       return;
     }
 
-    // Process form data (e.g., send to backend)
-    console.log('Form submitted:', formData);
+    try {
+      const response = await axios.post('http://127.0.0.1:5001/calc_score', {
+        name: `${formData.firstName} ${formData.lastName}`,
+        ssn: formData.ssn,
+        item_price: 1000, // Example item price
+      });
 
-    // Navigate to the results page
-    router.push('/results');
+      // Navigate to the results page with the score as a query parameter
+      router.push(`/results?score=${response.data.user.score}`);
+    } catch (err) {
+      console.error('Error submitting form:', err);
+      setError(
+        err.response?.data?.message || 'Failed to submit the form. Please try again.'
+      );
+    } finally {
+      setLoading(false); // Reset loading state
+    }
   };
 
   const handleBack = () => {
-    router.back(); // Go back to the previous page
+    router.back(); // Navigate to the previous page
   };
 
   return (
@@ -40,8 +56,8 @@ export default function QuestionnairePage() {
         <a href="/" className="text-2xl font-bold text-teal-600">
           ChanceCredit
         </a>
-        <a 
-          href="/login" 
+        <a
+          href="/login"
           className="px-4 py-2 text-xl text-teal-600 hover:text-teal-700 font-bold"
         >
           LOG IN
@@ -54,10 +70,10 @@ export default function QuestionnairePage() {
           <h1 className="text-3xl font-bold text-gray-800">
             What's your legal name?
           </h1>
-          
+
           <p className="text-gray-600 flex items-center gap-2">
             Checking your rate won't affect your credit score.
-            <svg 
+            <svg
               className="w-5 h-5 text-gray-400"
               fill="none"
               stroke="currentColor"
@@ -72,10 +88,17 @@ export default function QuestionnairePage() {
             </svg>
           </p>
 
+          {error && (
+            <div className="text-red-500 text-center">{error}</div>
+          )}
+
           <form onSubmit={handleSubmit} className="w-full max-w-2xl space-y-6">
             {/* First Name */}
             <div>
-              <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="firstName"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Legal First Name
               </label>
               <input
@@ -92,7 +115,10 @@ export default function QuestionnairePage() {
             {/* Last Name and SSN */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="lastName"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Legal Last Name
                 </label>
                 <input
@@ -105,9 +131,12 @@ export default function QuestionnairePage() {
                   required
                 />
               </div>
-              
+
               <div>
-                <label htmlFor="ssn" className="block text-sm font-medium text-gray-700">
+                <label
+                  htmlFor="ssn"
+                  className="block text-sm font-medium text-gray-700"
+                >
                   Social Security Number
                 </label>
                 <input
@@ -133,12 +162,17 @@ export default function QuestionnairePage() {
               >
                 ← Back
               </button>
-              
+
               <button
                 type="submit"
-                className="px-8 py-3 bg-teal-600 text-white font-semibold rounded-lg hover:bg-teal-700 transition-colors"
+                disabled={loading} // Disable button while loading
+                className={`px-8 py-3 font-semibold rounded-lg transition-colors ${
+                  loading
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    : 'bg-teal-600 text-white hover:bg-teal-700'
+                }`}
               >
-                Next
+                {loading ? 'Submitting...' : 'Next'}
               </button>
             </div>
           </form>
